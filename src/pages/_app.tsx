@@ -2,6 +2,7 @@ import { keyStores, connect, Near } from "near-api-js";
 import { AppProps } from "next/app";
 import { Dispatch, SetStateAction, createContext, useEffect, useState } from "react";
 import '../styles/globals.css';
+import { CoinGeckoClient } from 'coingecko-api-v3';
 
 async function connectToNear() {
     const connectionConfig = {
@@ -16,13 +17,17 @@ async function connectToNear() {
 }
   
 export const nearConnectionContext = createContext<{
-nearConnection: Near;
-setNearConnection: Dispatch<SetStateAction<Near>>;
+    nearConnection: Near;
+    setNearConnection: Dispatch<SetStateAction<Near>>;
 }>(undefined);
 
 export default function MyApp({ Component, pageProps }: AppProps) {
     const [nearConnection, setNearConnection] = useState<Near>(undefined);
-    
+
+    const client = new CoinGeckoClient({
+        timeout: 10000,
+        autoRetry: true,
+    });
     useEffect(() => {
         connectToNear()
           .then(conn => {

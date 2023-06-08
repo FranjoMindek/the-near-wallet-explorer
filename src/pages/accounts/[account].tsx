@@ -5,6 +5,8 @@ import { AccountBalance } from 'near-api-js/lib/account';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { toNear } from '@/utils/helpers';
+import coinGeckoClient from '../../../lib/coinGecko'
 
 type Transaction = {
   transaction_hash: string;
@@ -27,9 +29,17 @@ async function getAccountBalance(nearConnection: Near, accountId: string) {
   return await account.getAccountBalance();
 }
 
+async function getCurrentValue(currency = 'usd', coin = 'near'){
+  return (await coinGeckoClient.simplePrice({
+    vs_currencies: currency,
+    ids: coin,
+  }))[coin][currency];
+}
+
 export default function Account() {
   const [accountBalance, setAccountBalance] = useState<AccountBalance>(undefined);
   const [transactions, setTransactions] = useState<Transaction[]>(undefined);
+  const [currencyValue, setCurrencyValue] = useState<number>(undefined);
   const { nearConnection } = useContext(nearConnectionContext);
   const router = useRouter();
   const accountId = router.query.account as string;
@@ -40,6 +50,7 @@ export default function Account() {
         .then(balance => setAccountBalance(balance));
       getRecentTransactions(accountId)
         .then(transactions => setTransactions(transactions));
+      getCurrentValue().then(value => setCurrencyValue(value));
     }
   }, [nearConnection, accountId]);
 
@@ -51,19 +62,39 @@ export default function Account() {
           <ul className='flex flex-col gap-2 bg-neutral-700 p-2 w-fit'>
             <li className='grid grid-cols-2 bg-neutral-600 p-2'>
               <span>Total:</span>
-              <span>{accountBalance.total}</span>
+              {currencyValue &&
+                <span>{toNear(+accountBalance.total) * currencyValue} USD</span>
+              }
+              {!currencyValue &&
+                <span>Loading currency...</span>
+              }
             </li>
             <li className='grid grid-cols-2 bg-neutral-600 p-2'>
               <span>State staked:</span>
-              <span>{accountBalance.stateStaked}</span>
+              {currencyValue &&
+                <span>{toNear(+accountBalance.stateStaked) * currencyValue} USD</span>
+              }
+              {!currencyValue &&
+                <span>Loading currency...</span>
+              }
             </li>
             <li className='grid grid-cols-2 bg-neutral-600 p-2'>
               <span>Staked:</span>
-              <span>{accountBalance.staked}</span>
+              {currencyValue &&
+                <span>{toNear(+accountBalance.staked) * currencyValue} USD</span>
+              }
+              {!currencyValue &&
+                <span>Loading currency...</span>
+              }
             </li>
             <li className='grid grid-cols-2 bg-neutral-600 p-2'>
               <span>Available:</span>
-              <span>{accountBalance.available}</span>
+              {currencyValue &&
+                <span>{toNear(+accountBalance.available) * currencyValue} USD</span>
+              }
+              {!currencyValue &&
+                <span>Loading currency...</span>
+              }
             </li>
           </ul>
         }
