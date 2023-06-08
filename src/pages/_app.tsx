@@ -3,7 +3,7 @@ import { AppProps } from "next/app";
 import { Dispatch, SetStateAction, createContext, useEffect, useState } from "react";
 import '../styles/globals.css';
 
-async function connnectToNear() {
+async function connectToNear() {
     const connectionConfig = {
         networkId: "mainnet",
         keyStore: new keyStores.BrowserLocalStorageKeyStore, 
@@ -12,8 +12,7 @@ async function connnectToNear() {
         helperUrl: "https://helper.mainnet.near.org",
         explorerUrl: "https://explorer.mainnet.near.org",
     };
-    const nearConnection = await connect(connectionConfig);
-    return nearConnection;
+    return await connect(connectionConfig);
 }
   
 export const nearConnectionContext = createContext<{
@@ -25,11 +24,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     const [nearConnection, setNearConnection] = useState<Near>(undefined);
     
     useEffect(() => {
-        connnectToNear().then(conn => {
-        setNearConnection(conn);
+        connectToNear()
+          .then(conn => {
+            setNearConnection(conn);
         })
     }, [])
-  
 
     return (
         <nearConnectionContext.Provider value={{ nearConnection, setNearConnection }}>

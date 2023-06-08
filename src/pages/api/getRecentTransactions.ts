@@ -8,7 +8,7 @@ const getRecentTransactions = async (req: NextApiRequest, res: NextApiResponse) 
                 t.transaction_hash,
                 t.block_timestamp,
                 t.signer_account_id,
-                t.receiver_account_id,
+                r.receiver_account_id,
                 ta.action_kind,
                 ta.args
             FROM

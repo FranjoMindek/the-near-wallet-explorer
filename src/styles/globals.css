@@ -1,5 +1,10 @@
 @tailwind base;
 @tailwind components;
+
+#__next {
+  @apply flex flex-col w-full px-10;
+}
+
 @tailwind utilities;
 
 * {
