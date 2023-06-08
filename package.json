@@ -13,6 +13,7 @@
     "@types/react": "18.2.9",
     "@types/react-dom": "18.2.4",
     "axios": "^1.4.0",
+    "coingecko-api-v3": "^0.0.26",
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.4",
     "near-api-js": "^2.1.4",
